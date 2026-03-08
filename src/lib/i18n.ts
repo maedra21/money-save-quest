@@ -43,7 +43,8 @@ export function getCurrencySymbol(): string {
 
 export function formatCurrency(amount: number): string {
   const sym = getCurrencySymbol();
-  return `${sym}${amount.toFixed(amount % 1 === 0 ? 0 : 2)}`;
+  const formatted = amount % 1 === 0 ? amount.toFixed(0) : amount.toFixed(2);
+  return `${formatted}${sym}`;
 }
 
 // --- Translations ---
