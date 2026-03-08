@@ -16,10 +16,32 @@ export const CURRENCIES: CurrencyInfo[] = [
   { code: "KGS", symbol: "с", label: "Som", emoji: "🇰🇬" },
 ];
 
+export type DreamCategory = {
+  id: string;
+  emoji: string;
+  labelEn: string;
+  labelRu: string;
+};
+
+export const DREAM_CATEGORIES: DreamCategory[] = [
+  { id: "education", emoji: "🎓", labelEn: "Education", labelRu: "Учёба" },
+  { id: "apartment", emoji: "🏠", labelEn: "Apartment", labelRu: "Квартира" },
+  { id: "car", emoji: "🚗", labelEn: "Car", labelRu: "Машина" },
+  { id: "travel", emoji: "✈️", labelEn: "Travel", labelRu: "Путешествие" },
+  { id: "phone", emoji: "📱", labelEn: "Phone / Gadget", labelRu: "Телефон / Гаджет" },
+  { id: "pc", emoji: "💻", labelEn: "Computer", labelRu: "Компьютер" },
+  { id: "wedding", emoji: "💍", labelEn: "Wedding", labelRu: "Свадьба" },
+  { id: "emergency", emoji: "🛡️", labelEn: "Emergency Fund", labelRu: "Подушка безопасности" },
+  { id: "business", emoji: "🏢", labelEn: "Business", labelRu: "Бизнес" },
+  { id: "other", emoji: "⭐", labelEn: "Other", labelRu: "Другое" },
+];
+
 export type Preferences = {
   language: Language;
   currency: CurrencyCode;
   onboarded: boolean;
+  dreamId?: string | null;
+  dreamCustomName?: string | null;
 };
 
 const PREFS_KEY = "did-i-save-prefs";
@@ -28,7 +50,7 @@ export function getPreferences(): Preferences {
   const raw = localStorage.getItem(PREFS_KEY);
   return raw
     ? JSON.parse(raw)
-    : { language: "en", currency: "USD", onboarded: false };
+    : { language: "en", currency: "USD", onboarded: false, dreamId: null, dreamCustomName: null };
 }
 
 export function updatePreferences(partial: Partial<Preferences>): void {
@@ -45,6 +67,22 @@ export function formatCurrency(amount: number): string {
   const sym = getCurrencySymbol();
   const formatted = amount % 1 === 0 ? amount.toFixed(0) : amount.toFixed(2);
   return `${formatted}${sym}`;
+}
+
+export function getDreamLabel(): string | null {
+  const prefs = getPreferences();
+  if (!prefs.dreamId) return null;
+  if (prefs.dreamId === "other" && prefs.dreamCustomName) return prefs.dreamCustomName;
+  const cat = DREAM_CATEGORIES.find((c) => c.id === prefs.dreamId);
+  if (!cat) return null;
+  return prefs.language === "ru" ? cat.labelRu : cat.labelEn;
+}
+
+export function getDreamEmoji(): string | null {
+  const prefs = getPreferences();
+  if (!prefs.dreamId) return null;
+  const cat = DREAM_CATEGORIES.find((c) => c.id === prefs.dreamId);
+  return cat?.emoji || "⭐";
 }
 
 // --- Translations ---
@@ -90,6 +128,10 @@ const translations = {
     "settings.premium.downgrade": "Restore Ads (Downgrade)",
     "settings.language": "Language",
     "settings.currency": "Currency",
+    "settings.dream": "My Dream",
+    "settings.dream.select": "What are you saving for?",
+    "settings.dream.custom": "Enter your dream",
+    "settings.dream.clear": "Clear dream",
     "settings.about.name": "Did I Save Today? v1.0",
     "settings.about.local": "Data saved locally on your device",
     "nav.today": "Today",
@@ -111,6 +153,7 @@ const translations = {
     "achievement.monthlyMaster.desc": "30 day streak",
     "achievement.savingsLegend": "Savings Legend",
     "achievement.savingsLegend.desc": "100 day streak",
+    "dream.saving.for": "Saving for:",
   },
   ru: {
     "app.title": "Ты сэкономил\nденьги сегодня?",
@@ -156,6 +199,10 @@ const translations = {
     "settings.premium.downgrade": "Вернуть рекламу",
     "settings.language": "Язык",
     "settings.currency": "Валюта",
+    "settings.dream": "Моя мечта",
+    "settings.dream.select": "На что ты копишь?",
+    "settings.dream.custom": "Введи свою мечту",
+    "settings.dream.clear": "Сбросить мечту",
     "settings.about.name": "Did I Save Today? v1.0",
     "settings.about.local": "Данные сохраняются локально на устройстве",
     "nav.today": "Сегодня",
@@ -177,6 +224,7 @@ const translations = {
     "achievement.monthlyMaster.desc": "Серия 30 дней",
     "achievement.savingsLegend": "Легенда экономии",
     "achievement.savingsLegend.desc": "Серия 100 дней",
+    "dream.saving.for": "Коплю на:",
   },
 } as const;
 
