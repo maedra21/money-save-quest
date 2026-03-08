@@ -10,15 +10,18 @@ import {
   isToday,
   isFuture,
 } from "date-fns";
-import { getAllEntries } from "@/lib/storage";
+import { getAllEntries, DayEntry } from "@/lib/storage";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { t, formatCurrency } from "@/lib/i18n";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { t, formatCurrency, getPreferences } from "@/lib/i18n";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
 const CalendarView = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<{ date: string; entry?: DayEntry } | null>(null);
+  const lang = getPreferences().language;
+
   const entries = useMemo(() => {
     const all = getAllEntries();
     return new Map(all.map((e) => [e.date, e]));
@@ -34,6 +37,13 @@ const CalendarView = () => {
   const totalAmount = days
     .filter((d) => entries.get(format(d, "yyyy-MM-dd"))?.saved)
     .reduce((sum, d) => sum + (entries.get(format(d, "yyyy-MM-dd"))?.amount || 0), 0);
+
+  const handleDayClick = (day: Date) => {
+    if (isFuture(day)) return;
+    const key = format(day, "yyyy-MM-dd");
+    const entry = entries.get(key);
+    setSelectedDay({ date: key, entry });
+  };
 
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -89,20 +99,80 @@ const CalendarView = () => {
             else if (entry?.saved === false) bg = "bg-danger/60";
 
             return (
-              <div
+              <button
                 key={key}
+                onClick={() => handleDayClick(day)}
+                disabled={future}
                 className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-body transition-colors ${bg} ${
                   today ? "ring-2 ring-primary" : ""
-                } ${future ? "opacity-30" : ""}`}
+                } ${future ? "opacity-30 cursor-default" : "cursor-pointer active:scale-95"}`}
               >
                 <span>{format(day, "d")}</span>
                 {entry?.amount && (
                   <span className="text-[8px] text-primary-foreground/70">{formatCurrency(entry.amount)}</span>
                 )}
-              </div>
+              </button>
             );
           })}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Day detail popup */}
+      <AnimatePresence>
+        {selectedDay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-6"
+            onClick={() => setSelectedDay(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              className="bg-card border border-border rounded-2xl p-6 max-w-xs w-full shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-display font-bold text-foreground">{selectedDay.date}</h3>
+                <button onClick={() => setSelectedDay(null)} className="text-muted-foreground">
+                  <X size={20} />
+                </button>
+              </div>
+
+              {selectedDay.entry ? (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="text-5xl">
+                    {selectedDay.entry.saved ? "✅" : "❌"}
+                  </div>
+                  <p className="font-display font-semibold text-foreground">
+                    {selectedDay.entry.saved
+                      ? (lang === "ru" ? "Сэкономлено" : "Saved")
+                      : (lang === "ru" ? "Не сэкономлено" : "Not saved")}
+                  </p>
+                  {selectedDay.entry.saved && selectedDay.entry.amount && (
+                    <p className="text-2xl font-display font-bold text-primary">
+                      {formatCurrency(selectedDay.entry.amount)}
+                    </p>
+                  )}
+                  {selectedDay.entry.saved && !selectedDay.entry.amount && (
+                    <p className="text-sm text-muted-foreground font-body">
+                      {lang === "ru" ? "Сумма не указана" : "No amount specified"}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="text-5xl">📅</div>
+                  <p className="text-sm text-muted-foreground font-body">
+                    {lang === "ru" ? "Нет записи за этот день" : "No entry for this day"}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
