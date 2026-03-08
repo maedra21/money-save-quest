@@ -1,4 +1,5 @@
 import { getSettings } from "@/lib/storage";
+import { t } from "@/lib/i18n";
 
 const AdBanner = () => {
   const settings = getSettings();
@@ -6,7 +7,7 @@ const AdBanner = () => {
 
   return (
     <div className="w-full py-3 flex items-center justify-center bg-secondary/50 border-t border-border">
-      <p className="text-xs text-muted-foreground font-body">Ad Space — AdMob Banner</p>
+      <p className="text-xs text-muted-foreground font-body">{t("ad.text")}</p>
     </div>
   );
 };

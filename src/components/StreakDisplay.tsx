@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { t } from "@/lib/i18n";
 
 interface StreakDisplayProps {
   streak: number;
@@ -19,10 +20,10 @@ const StreakDisplay = ({ streak }: StreakDisplayProps) => {
         {streak > 0 ? (
           <>
             <span className="text-2xl font-display font-bold text-primary">{streak}</span>{" "}
-            day{streak !== 1 ? "s" : ""} streak
+            {t("streak.days", streak)}
           </>
         ) : (
-          "No streak yet — start today!"
+          t("streak.none")
         )}
       </p>
     </motion.div>

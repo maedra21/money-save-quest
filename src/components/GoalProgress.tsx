@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { getSettings, getTotalSavedSinceGoal } from "@/lib/storage";
+import { t, formatCurrency } from "@/lib/i18n";
 
 const GoalProgress = () => {
   const settings = getSettings();
@@ -17,9 +18,9 @@ const GoalProgress = () => {
       className="w-full max-w-xs"
     >
       <div className="flex justify-between items-baseline mb-2">
-        <span className="text-sm font-body text-muted-foreground">Savings Goal</span>
+        <span className="text-sm font-body text-muted-foreground">{t("goal.title")}</span>
         <span className="text-sm font-display font-bold text-foreground">
-          ${saved.toFixed(0)} <span className="text-muted-foreground font-normal">/ ${target}</span>
+          {formatCurrency(saved)} <span className="text-muted-foreground font-normal">/ {formatCurrency(target)}</span>
         </span>
       </div>
       <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
@@ -31,7 +32,7 @@ const GoalProgress = () => {
         />
       </div>
       {isComplete && (
-        <p className="text-xs text-primary font-body mt-1 text-center">🎉 Goal reached!</p>
+        <p className="text-xs text-primary font-body mt-1 text-center">{t("goal.reached")}</p>
       )}
     </motion.div>
   );

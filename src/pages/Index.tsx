@@ -9,6 +9,7 @@ import AdBanner from "@/components/AdBanner";
 import BottomNav from "@/components/BottomNav";
 import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate } from "@/lib/storage";
 import { requestNotificationPermission, scheduleNotifications } from "@/lib/notifications";
+import { t, formatCurrency } from "@/lib/i18n";
 
 const Index = () => {
   const [streak, setStreak] = useState(0);
@@ -36,6 +37,8 @@ const Index = () => {
     refresh();
   };
 
+  const titleLines = t("app.title").split("\n");
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <AchievementPopup />
@@ -46,9 +49,12 @@ const Index = () => {
           animate={{ y: 0, opacity: 1 }}
           className="text-3xl sm:text-4xl font-display font-bold text-center leading-tight"
         >
-          Did you save
-          <br />
-          money today?
+          {titleLines.map((line, i) => (
+            <span key={i}>
+              {line}
+              {i < titleLines.length - 1 && <br />}
+            </span>
+          ))}
         </motion.h1>
 
         <StreakDisplay streak={streak} />
@@ -67,15 +73,15 @@ const Index = () => {
               <p className="text-lg font-body text-muted-foreground text-center">
                 {todayAnswer
                   ? todayAmount
-                    ? `You saved $${todayAmount.toFixed(2)} today!`
-                    : "Great job! Keep the streak going!"
-                  : "That's okay. Try again tomorrow!"}
+                    ? t("answered.yes.amount", formatCurrency(todayAmount))
+                    : t("answered.yes")
+                  : t("answered.no")}
               </p>
               <button
                 onClick={() => setAnswered(false)}
                 className="text-sm text-muted-foreground underline mt-1"
               >
-                Change answer
+                {t("answered.change")}
               </button>
             </motion.div>
           ) : (

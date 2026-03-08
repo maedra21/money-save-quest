@@ -1,15 +1,16 @@
 import { Home, CalendarDays, Trophy, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { t } from "@/lib/i18n";
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const tabs = [
-    { path: "/", icon: Home, label: "Today" },
-    { path: "/history", icon: CalendarDays, label: "History" },
-    { path: "/achievements", icon: Trophy, label: "Badges" },
-    { path: "/settings", icon: Settings, label: "Settings" },
+    { path: "/", icon: Home, labelKey: "nav.today" as const },
+    { path: "/history", icon: CalendarDays, labelKey: "nav.history" as const },
+    { path: "/achievements", icon: Trophy, labelKey: "nav.badges" as const },
+    { path: "/settings", icon: Settings, labelKey: "nav.settings" as const },
   ];
 
   return (
@@ -25,7 +26,7 @@ const BottomNav = () => {
             }`}
           >
             <tab.icon size={20} />
-            <span className="text-[10px] font-body">{tab.label}</span>
+            <span className="text-[10px] font-body">{t(tab.labelKey)}</span>
           </button>
         );
       })}

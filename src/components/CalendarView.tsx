@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   format,
   startOfMonth,
@@ -14,6 +13,7 @@ import {
 import { getAllEntries } from "@/lib/storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { t, formatCurrency } from "@/lib/i18n";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -49,13 +49,13 @@ const CalendarView = () => {
 
       <div className="flex gap-3 mb-4 justify-center flex-wrap">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2.5 h-2.5 rounded-full bg-success" /> {savedCount} saved
+          <span className="w-2.5 h-2.5 rounded-full bg-success" /> {t("calendar.saved", savedCount)}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2.5 h-2.5 rounded-full bg-danger" /> {missedCount} missed
+          <span className="w-2.5 h-2.5 rounded-full bg-danger" /> {t("calendar.missed", missedCount)}
         </div>
         {totalAmount > 0 && (
-          <div className="text-xs text-primary font-bold">${totalAmount.toFixed(0)} saved</div>
+          <div className="text-xs text-primary font-bold">{formatCurrency(totalAmount)} {t("share.saved")}</div>
         )}
       </div>
 
@@ -97,7 +97,7 @@ const CalendarView = () => {
               >
                 <span>{format(day, "d")}</span>
                 {entry?.amount && (
-                  <span className="text-[8px] text-primary-foreground/70">${entry.amount}</span>
+                  <span className="text-[8px] text-primary-foreground/70">{formatCurrency(entry.amount)}</span>
                 )}
               </div>
             );
