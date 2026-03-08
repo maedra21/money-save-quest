@@ -61,6 +61,7 @@ const Index = () => {
         <StreakDisplay streak={streak} />
 
         <GoalProgress />
+        <TotalSaved />
 
         <AnimatePresence mode="wait">
           {answered ? (
