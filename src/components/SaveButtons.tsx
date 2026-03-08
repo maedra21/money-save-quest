@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { t, getCurrencySymbol } from "@/lib/i18n";
 
 interface SaveButtonsProps {
   onAnswer: (saved: boolean, amount?: number) => void;
@@ -9,6 +10,7 @@ interface SaveButtonsProps {
 const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [amount, setAmount] = useState("");
+  const symbol = getCurrencySymbol();
 
   const handleYes = () => {
     setShowAmountInput(true);
@@ -34,9 +36,9 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         animate={{ scale: 1, opacity: 1 }}
         className="flex flex-col items-center gap-4 w-full max-w-xs"
       >
-        <p className="text-lg font-display font-semibold text-foreground">How much did you save?</p>
+        <p className="text-lg font-display font-semibold text-foreground">{t("amount.question")}</p>
         <div className="relative w-full">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-display text-muted-foreground">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-display text-muted-foreground">{symbol}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -53,14 +55,14 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
             onClick={handleSubmitAmount}
             className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg"
           >
-            Save ✅
+            {t("amount.save")}
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handleSkipAmount}
             className="py-3 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border"
           >
-            Skip
+            {t("amount.skip")}
           </motion.button>
         </div>
       </motion.div>
@@ -76,7 +78,7 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         disabled={disabled}
         className="flex-1 py-6 rounded-2xl bg-primary text-primary-foreground font-display text-2xl font-bold shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        ✅ YES
+        {t("btn.yes")}
       </motion.button>
       <motion.button
         whileTap={{ scale: 0.92 }}
@@ -85,7 +87,7 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         disabled={disabled}
         className="flex-1 py-6 rounded-2xl bg-secondary text-destructive font-display text-2xl font-bold shadow-lg border border-border disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        ❌ NO
+        {t("btn.no")}
       </motion.button>
     </div>
   );
