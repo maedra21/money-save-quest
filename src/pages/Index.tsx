@@ -2,38 +2,45 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import StreakDisplay from "@/components/StreakDisplay";
 import SaveButtons from "@/components/SaveButtons";
+import GoalProgress from "@/components/GoalProgress";
+import DailyQuote from "@/components/DailyQuote";
+import AchievementPopup from "@/components/AchievementPopup";
 import AdBanner from "@/components/AdBanner";
 import BottomNav from "@/components/BottomNav";
 import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate } from "@/lib/storage";
-import { requestNotificationPermission, scheduleDailyReminder } from "@/lib/notifications";
+import { requestNotificationPermission, scheduleNotifications } from "@/lib/notifications";
 
 const Index = () => {
   const [streak, setStreak] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [todayAnswer, setTodayAnswer] = useState<boolean | null>(null);
+  const [todayAmount, setTodayAmount] = useState<number | undefined>();
 
   const refresh = useCallback(() => {
     setStreak(getStreak());
     setAnswered(hasAnsweredToday());
     const entry = getEntryForDate(new Date());
     setTodayAnswer(entry?.saved ?? null);
+    setTodayAmount(entry?.amount);
   }, []);
 
   useEffect(() => {
     refresh();
     requestNotificationPermission().then((granted) => {
-      if (granted) scheduleDailyReminder();
+      if (granted) scheduleNotifications();
     });
   }, [refresh]);
 
-  const handleAnswer = (saved: boolean) => {
-    saveEntry(new Date(), saved);
+  const handleAnswer = (saved: boolean, amount?: number) => {
+    saveEntry(new Date(), saved, amount);
     refresh();
   };
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-10">
+      <AchievementPopup />
+
+      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6 py-8">
         <motion.h1
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -46,6 +53,8 @@ const Index = () => {
 
         <StreakDisplay streak={streak} />
 
+        <GoalProgress />
+
         <AnimatePresence mode="wait">
           {answered ? (
             <motion.div
@@ -57,15 +66,14 @@ const Index = () => {
               <div className="text-5xl">{todayAnswer ? "🎉" : "😔"}</div>
               <p className="text-lg font-body text-muted-foreground text-center">
                 {todayAnswer
-                  ? "Great job! Keep the streak going!"
+                  ? todayAmount
+                    ? `You saved $${todayAmount.toFixed(2)} today!`
+                    : "Great job! Keep the streak going!"
                   : "That's okay. Try again tomorrow!"}
               </p>
               <button
-                onClick={() => {
-                  // Allow changing answer
-                  setAnswered(false);
-                }}
-                className="text-sm text-muted-foreground underline mt-2"
+                onClick={() => setAnswered(false)}
+                className="text-sm text-muted-foreground underline mt-1"
               >
                 Change answer
               </button>
@@ -75,12 +83,14 @@ const Index = () => {
               key="buttons"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="flex justify-center"
+              className="flex justify-center w-full"
             >
               <SaveButtons onAnswer={handleAnswer} disabled={false} />
             </motion.div>
           )}
         </AnimatePresence>
+
+        <DailyQuote />
       </div>
 
       <AdBanner />

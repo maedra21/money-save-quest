@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useMemo } from "react";
 import {
   format,
   startOfMonth,
@@ -7,21 +8,20 @@ import {
   getDay,
   subMonths,
   addMonths,
-  isSameMonth,
   isToday,
   isFuture,
 } from "date-fns";
-import { getAllEntries, DayEntry } from "@/lib/storage";
+import { getAllEntries } from "@/lib/storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
 const CalendarView = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const entries = useMemo(() => {
     const all = getAllEntries();
-    return new Map(all.map((e) => [e.date, e.saved]));
+    return new Map(all.map((e) => [e.date, e]));
   }, [currentMonth]);
 
   const monthStart = startOfMonth(currentMonth);
@@ -29,42 +29,44 @@ const CalendarView = () => {
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
   const startPadding = getDay(monthStart);
 
-  const savedCount = days.filter((d) => entries.get(format(d, "yyyy-MM-dd")) === true).length;
-  const missedCount = days.filter((d) => entries.get(format(d, "yyyy-MM-dd")) === false).length;
+  const savedCount = days.filter((d) => entries.get(format(d, "yyyy-MM-dd"))?.saved === true).length;
+  const missedCount = days.filter((d) => entries.get(format(d, "yyyy-MM-dd"))?.saved === false).length;
+  const totalAmount = days
+    .filter((d) => entries.get(format(d, "yyyy-MM-dd"))?.saved)
+    .reduce((sum, d) => sum + (entries.get(format(d, "yyyy-MM-dd"))?.amount || 0), 0);
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      {/* Month navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-lg bg-secondary text-foreground">
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
         </button>
-        <h2 className="text-xl font-display font-bold">{format(currentMonth, "MMMM yyyy")}</h2>
+        <h2 className="text-lg font-display font-bold">{format(currentMonth, "MMMM yyyy")}</h2>
         <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 rounded-lg bg-secondary text-foreground">
-          <ChevronRight size={20} />
+          <ChevronRight size={18} />
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="flex gap-4 mb-6 justify-center">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="w-3 h-3 rounded-full bg-success" /> {savedCount} saved
+      <div className="flex gap-3 mb-4 justify-center flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="w-2.5 h-2.5 rounded-full bg-success" /> {savedCount} saved
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="w-3 h-3 rounded-full bg-danger" /> {missedCount} missed
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="w-2.5 h-2.5 rounded-full bg-danger" /> {missedCount} missed
         </div>
+        {totalAmount > 0 && (
+          <div className="text-xs text-primary font-bold">${totalAmount.toFixed(0)} saved</div>
+        )}
       </div>
 
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="text-center text-xs font-body text-muted-foreground py-1">
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {WEEKDAYS.map((d, i) => (
+          <div key={`${d}-${i}`} className="text-center text-[10px] font-body text-muted-foreground py-1">
             {d}
           </div>
         ))}
       </div>
 
-      {/* Days */}
       <AnimatePresence mode="wait">
         <motion.div
           key={format(currentMonth, "yyyy-MM")}
@@ -78,22 +80,25 @@ const CalendarView = () => {
           ))}
           {days.map((day) => {
             const key = format(day, "yyyy-MM-dd");
-            const saved = entries.get(key);
+            const entry = entries.get(key);
             const future = isFuture(day);
             const today = isToday(day);
 
             let bg = "bg-secondary/30";
-            if (saved === true) bg = "bg-success/80";
-            else if (saved === false) bg = "bg-danger/60";
+            if (entry?.saved === true) bg = "bg-success/80";
+            else if (entry?.saved === false) bg = "bg-danger/60";
 
             return (
               <div
                 key={key}
-                className={`aspect-square rounded-lg flex items-center justify-center text-sm font-body transition-colors ${bg} ${
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-body transition-colors ${bg} ${
                   today ? "ring-2 ring-primary" : ""
                 } ${future ? "opacity-30" : ""}`}
               >
-                {format(day, "d")}
+                <span>{format(day, "d")}</span>
+                {entry?.amount && (
+                  <span className="text-[8px] text-primary-foreground/70">${entry.amount}</span>
+                )}
               </div>
             );
           })}
