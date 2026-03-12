@@ -4,6 +4,7 @@ export type DayEntry = {
   date: string; // YYYY-MM-DD
   saved: boolean;
   amount?: number;
+  category?: string; // what they saved on
 };
 
 type SavingsGoal = {
