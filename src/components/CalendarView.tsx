@@ -10,7 +10,7 @@ import {
   isToday,
   isFuture,
 } from "date-fns";
-import { getAllEntries, DayEntry } from "@/lib/storage";
+import { getAllEntries, DayEntry, getEntryItems } from "@/lib/storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { t, formatCurrency, getPreferences } from "@/lib/i18n";
