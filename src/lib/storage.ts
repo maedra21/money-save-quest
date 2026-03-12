@@ -4,6 +4,7 @@ export type DayEntry = {
   date: string; // YYYY-MM-DD
   saved: boolean;
   amount?: number;
+  category?: string; // what they saved on
 };
 
 type SavingsGoal = {
@@ -32,11 +33,11 @@ export function getEntryForDate(date: Date): DayEntry | undefined {
   return getAllEntries().find((e) => e.date === key);
 }
 
-export function saveEntry(date: Date, saved: boolean, amount?: number): void {
+export function saveEntry(date: Date, saved: boolean, amount?: number, category?: string): void {
   const entries = getAllEntries();
   const key = format(date, "yyyy-MM-dd");
   const existing = entries.findIndex((e) => e.date === key);
-  const entry: DayEntry = { date: key, saved, amount: saved ? amount : undefined };
+  const entry: DayEntry = { date: key, saved, amount: saved ? amount : undefined, category: saved ? category : undefined };
   if (existing >= 0) {
     entries[existing] = entry;
   } else {
