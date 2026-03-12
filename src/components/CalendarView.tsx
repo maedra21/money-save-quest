@@ -151,6 +151,11 @@ const CalendarView = () => {
                       ? (lang === "ru" ? "Сэкономлено" : "Saved")
                       : (lang === "ru" ? "Не сэкономлено" : "Not saved")}
                   </p>
+                  {selectedDay.entry.saved && selectedDay.entry.category && (
+                    <p className="text-sm font-body text-muted-foreground bg-secondary px-3 py-1 rounded-lg">
+                      {selectedDay.entry.category}
+                    </p>
+                  )}
                   {selectedDay.entry.saved && selectedDay.entry.amount && (
                     <p className="text-2xl font-display font-bold text-primary">
                       {formatCurrency(selectedDay.entry.amount)}
