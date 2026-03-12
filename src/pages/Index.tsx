@@ -35,8 +35,8 @@ const Index = () => {
     });
   }, [refresh]);
 
-  const handleAnswer = (saved: boolean, amount?: number, category?: string) => {
-    saveEntry(new Date(), saved, amount, category);
+  const handleAnswer = (saved: boolean, items?: SavingItem[]) => {
+    saveEntry(new Date(), saved, items);
     refresh();
   };
 

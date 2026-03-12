@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { t, getCurrencySymbol } from "@/lib/i18n";
+import { t, getCurrencySymbol, formatCurrency } from "@/lib/i18n";
+import type { SavingItem } from "@/lib/storage";
+import { Plus } from "lucide-react";
 
 const CATEGORIES = [
   "category.food",
@@ -13,14 +15,15 @@ const CATEGORIES = [
 ] as const;
 
 interface SaveButtonsProps {
-  onAnswer: (saved: boolean, amount?: number, category?: string) => void;
+  onAnswer: (saved: boolean, items?: SavingItem[]) => void;
   disabled: boolean;
 }
 
 const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
-  const [step, setStep] = useState<"buttons" | "amount" | "category">("buttons");
+  const [step, setStep] = useState<"buttons" | "amount" | "category" | "review">("buttons");
   const [amount, setAmount] = useState("");
-  const [savedAmount, setSavedAmount] = useState<number | undefined>();
+  const [currentAmount, setCurrentAmount] = useState<number | undefined>();
+  const [items, setItems] = useState<SavingItem[]>([]);
   const symbol = getCurrencySymbol();
 
   const handleYes = () => {
@@ -29,30 +32,95 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
 
   const handleSubmitAmount = () => {
     const num = parseFloat(amount);
-    setSavedAmount(num > 0 ? num : undefined);
+    setCurrentAmount(num > 0 ? num : undefined);
     setStep("category");
   };
 
   const handleSkipAmount = () => {
-    setSavedAmount(undefined);
+    setCurrentAmount(undefined);
     setStep("category");
   };
 
   const handleSelectCategory = (cat: string) => {
-    onAnswer(true, savedAmount, cat);
-    resetState();
+    const newItem: SavingItem = { amount: currentAmount, category: cat };
+    const newItems = [...items, newItem];
+    setItems(newItems);
+    setStep("review");
+    setAmount("");
+    setCurrentAmount(undefined);
   };
 
   const handleSkipCategory = () => {
-    onAnswer(true, savedAmount);
+    const newItem: SavingItem = { amount: currentAmount };
+    const newItems = [...items, newItem];
+    setItems(newItems);
+    setStep("review");
+    setAmount("");
+    setCurrentAmount(undefined);
+  };
+
+  const handleAddMore = () => {
+    setStep("amount");
+  };
+
+  const handleFinish = () => {
+    onAnswer(true, items);
     resetState();
   };
 
   const resetState = () => {
     setStep("buttons");
     setAmount("");
-    setSavedAmount(undefined);
+    setCurrentAmount(undefined);
+    setItems([]);
   };
+
+  if (step === "review") {
+    const total = items.reduce((sum, i) => sum + (i.amount || 0), 0);
+    return (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="flex flex-col items-center gap-4 w-full max-w-xs"
+      >
+        <p className="text-lg font-display font-semibold text-foreground">
+          {t("review.title")}
+        </p>
+        <div className="w-full space-y-2">
+          {items.map((item, i) => (
+            <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-2.5 border border-border">
+              <span className="text-sm font-body text-foreground">{item.category || "—"}</span>
+              <span className="text-sm font-display font-bold text-primary">
+                {item.amount ? formatCurrency(item.amount) : "—"}
+              </span>
+            </div>
+          ))}
+        </div>
+        {total > 0 && (
+          <p className="text-lg font-display font-bold text-primary">
+            {t("review.total")}: {formatCurrency(total)}
+          </p>
+        )}
+        <div className="flex gap-3 w-full">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleFinish}
+            className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg"
+          >
+            {t("review.done")}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleAddMore}
+            className="py-3 px-4 rounded-xl bg-secondary text-foreground font-body text-sm border border-border flex items-center gap-1.5"
+          >
+            <Plus size={16} />
+            {t("review.addMore")}
+          </motion.button>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (step === "category") {
     return (
@@ -93,6 +161,11 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         className="flex flex-col items-center gap-4 w-full max-w-xs"
       >
         <p className="text-lg font-display font-semibold text-foreground">{t("amount.question")}</p>
+        {items.length > 0 && (
+          <p className="text-xs text-muted-foreground font-body">
+            {t("review.itemCount", items.length)}
+          </p>
+        )}
         <div className="relative w-full">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-display text-muted-foreground">{symbol}</span>
           <input
