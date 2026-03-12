@@ -151,21 +151,31 @@ const CalendarView = () => {
                       ? (lang === "ru" ? "Сэкономлено" : "Saved")
                       : (lang === "ru" ? "Не сэкономлено" : "Not saved")}
                   </p>
-                  {selectedDay.entry.saved && selectedDay.entry.category && (
-                    <p className="text-sm font-body text-muted-foreground bg-secondary px-3 py-1 rounded-lg">
-                      {selectedDay.entry.category}
-                    </p>
-                  )}
-                  {selectedDay.entry.saved && selectedDay.entry.amount && (
-                    <p className="text-2xl font-display font-bold text-primary">
-                      {formatCurrency(selectedDay.entry.amount)}
-                    </p>
-                  )}
-                  {selectedDay.entry.saved && !selectedDay.entry.amount && (
-                    <p className="text-sm text-muted-foreground font-body">
-                      {lang === "ru" ? "Сумма не указана" : "No amount specified"}
-                    </p>
-                  )}
+                  {selectedDay.entry.saved && (() => {
+                    const items = getEntryItems(selectedDay.entry!);
+                    if (items.length === 0) return (
+                      <p className="text-sm text-muted-foreground font-body">
+                        {lang === "ru" ? "Сумма не указана" : "No amount specified"}
+                      </p>
+                    );
+                    return (
+                      <div className="w-full space-y-2">
+                        {items.map((item, i) => (
+                          <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-2 border border-border">
+                            <span className="text-sm font-body text-foreground">{item.category || "—"}</span>
+                            <span className="text-sm font-display font-bold text-primary">
+                              {item.amount ? formatCurrency(item.amount) : "—"}
+                            </span>
+                          </div>
+                        ))}
+                        {selectedDay.entry!.amount && (
+                          <p className="text-center text-lg font-display font-bold text-primary mt-1">
+                            {lang === "ru" ? "Итого" : "Total"}: {formatCurrency(selectedDay.entry!.amount)}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3">
