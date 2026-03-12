@@ -77,9 +77,16 @@ const Index = () => {
               <div className="text-5xl">{todayAnswer ? "🎉" : "😔"}</div>
               <p className="text-lg font-body text-muted-foreground text-center">
                 {todayAnswer
-                  ? todayAmount
-                    ? t("answered.yes.amount", formatCurrency(todayAmount))
-                    : t("answered.yes")
+                  ? (() => {
+                      const entry = getEntryForDate(new Date());
+                      const items = entry ? getEntryItems(entry) : [];
+                      if (items.length > 1) {
+                        return t("answered.yes.amount", formatCurrency(todayAmount || 0));
+                      }
+                      return todayAmount
+                        ? t("answered.yes.amount", formatCurrency(todayAmount))
+                        : t("answered.yes");
+                    })()
                   : t("answered.no")}
               </p>
               <button
