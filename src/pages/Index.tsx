@@ -9,7 +9,8 @@ import DailyQuote from "@/components/DailyQuote";
 import AchievementPopup from "@/components/AchievementPopup";
 import AdBanner from "@/components/AdBanner";
 import BottomNav from "@/components/BottomNav";
-import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate } from "@/lib/storage";
+import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate, getEntryItems } from "@/lib/storage";
+import type { SavingItem } from "@/lib/storage";
 import { requestNotificationPermission, scheduleNotifications } from "@/lib/notifications";
 import { t, formatCurrency } from "@/lib/i18n";
 
