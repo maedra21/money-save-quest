@@ -1,10 +1,16 @@
 import { format, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval } from "date-fns";
 
+export type SavingItem = {
+  amount?: number;
+  category?: string;
+};
+
 export type DayEntry = {
   date: string; // YYYY-MM-DD
   saved: boolean;
-  amount?: number;
-  category?: string; // what they saved on
+  amount?: number; // legacy, total
+  category?: string; // legacy, first item
+  items?: SavingItem[];
 };
 
 type SavingsGoal = {
