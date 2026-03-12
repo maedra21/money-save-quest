@@ -9,7 +9,8 @@ import DailyQuote from "@/components/DailyQuote";
 import AchievementPopup from "@/components/AchievementPopup";
 import AdBanner from "@/components/AdBanner";
 import BottomNav from "@/components/BottomNav";
-import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate } from "@/lib/storage";
+import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate, getEntryItems } from "@/lib/storage";
+import type { SavingItem } from "@/lib/storage";
 import { requestNotificationPermission, scheduleNotifications } from "@/lib/notifications";
 import { t, formatCurrency } from "@/lib/i18n";
 
@@ -34,8 +35,8 @@ const Index = () => {
     });
   }, [refresh]);
 
-  const handleAnswer = (saved: boolean, amount?: number, category?: string) => {
-    saveEntry(new Date(), saved, amount, category);
+  const handleAnswer = (saved: boolean, items?: SavingItem[]) => {
+    saveEntry(new Date(), saved, items);
     refresh();
   };
 
@@ -76,9 +77,16 @@ const Index = () => {
               <div className="text-5xl">{todayAnswer ? "🎉" : "😔"}</div>
               <p className="text-lg font-body text-muted-foreground text-center">
                 {todayAnswer
-                  ? todayAmount
-                    ? t("answered.yes.amount", formatCurrency(todayAmount))
-                    : t("answered.yes")
+                  ? (() => {
+                      const entry = getEntryForDate(new Date());
+                      const items = entry ? getEntryItems(entry) : [];
+                      if (items.length > 1) {
+                        return t("answered.yes.amount", formatCurrency(todayAmount || 0));
+                      }
+                      return todayAmount
+                        ? t("answered.yes.amount", formatCurrency(todayAmount))
+                        : t("answered.yes");
+                    })()
                   : t("answered.no")}
               </p>
               <button

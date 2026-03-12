@@ -55,7 +55,7 @@ const Welcome = ({ onComplete }: WelcomeProps) => {
                   : "bg-secondary text-foreground border-border"
               }`}
             >
-              {lang === "en" ? "🇬🇧 English" : "🇷🇺 Русский"}
+              {lang === "en" ? "🇺🇸 English" : "🇷🇺 Русский"}
             </button>
           ))}
         </div>

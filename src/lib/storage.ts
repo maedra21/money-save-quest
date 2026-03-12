@@ -1,10 +1,16 @@
 import { format, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval } from "date-fns";
 
+export type SavingItem = {
+  amount?: number;
+  category?: string;
+};
+
 export type DayEntry = {
   date: string; // YYYY-MM-DD
   saved: boolean;
-  amount?: number;
-  category?: string; // what they saved on
+  amount?: number; // legacy, total
+  category?: string; // legacy, first item
+  items?: SavingItem[];
 };
 
 type SavingsGoal = {
@@ -33,17 +39,42 @@ export function getEntryForDate(date: Date): DayEntry | undefined {
   return getAllEntries().find((e) => e.date === key);
 }
 
-export function saveEntry(date: Date, saved: boolean, amount?: number, category?: string): void {
+export function saveEntry(date: Date, saved: boolean, items?: SavingItem[]): void {
   const entries = getAllEntries();
   const key = format(date, "yyyy-MM-dd");
   const existing = entries.findIndex((e) => e.date === key);
-  const entry: DayEntry = { date: key, saved, amount: saved ? amount : undefined, category: saved ? category : undefined };
+
+  const totalAmount = items?.reduce((sum, i) => sum + (i.amount || 0), 0) || 0;
+  const entry: DayEntry = {
+    date: key,
+    saved,
+    amount: saved && totalAmount > 0 ? totalAmount : undefined,
+    items: saved && items && items.length > 0 ? items : undefined,
+  };
+
   if (existing >= 0) {
+    // If adding to existing saved day, merge items
+    const prev = entries[existing];
+    if (saved && prev.saved && prev.items) {
+      const mergedItems = [...prev.items, ...(items || [])];
+      const mergedTotal = mergedItems.reduce((sum, i) => sum + (i.amount || 0), 0);
+      entry.items = mergedItems;
+      entry.amount = mergedTotal > 0 ? mergedTotal : undefined;
+    }
     entries[existing] = entry;
   } else {
     entries.push(entry);
   }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+/** Helper to get all items for an entry, supporting legacy format */
+export function getEntryItems(entry: DayEntry): SavingItem[] {
+  if (entry.items && entry.items.length > 0) return entry.items;
+  if (entry.saved && (entry.amount || entry.category)) {
+    return [{ amount: entry.amount, category: entry.category }];
+  }
+  return [];
 }
 
 export function getStreak(): number {
