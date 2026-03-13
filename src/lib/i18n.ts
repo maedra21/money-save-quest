@@ -101,7 +101,7 @@ const translations = {
     "answered.no": "That's okay. Try again tomorrow!",
     "answered.change": "Change answer",
     "amount.question": "How much did you save?",
-    "amount.save": "Save ✅",
+    "amount.hint": "At least an approximate amount",
     "amount.skip": "Skip",
     "category.question": "What did you save on?",
     "category.skip": "Skip",
