@@ -31,7 +31,6 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
   };
 
   const [amountError, setAmountError] = useState(false);
-  const symbol = getCurrencySymbol();
 
   const validateAmount = (val: string): boolean => {
     // Only allow digits and one decimal point
