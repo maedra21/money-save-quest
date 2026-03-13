@@ -61,6 +61,14 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
     setStep("category");
   };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // Allow only numbers and one decimal point during typing
+    if (val && !/^\d*\.?\d*$/.test(val)) return;
+    setAmount(val);
+    setAmountError(false);
+  };
+
   const handleSkipAmount = () => {
     setCurrentAmount(undefined);
     setStep("category");
