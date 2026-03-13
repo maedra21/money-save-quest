@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { t, getCurrencySymbol, formatCurrency } from "@/lib/i18n";
 import type { SavingItem } from "@/lib/storage";
-import { Plus } from "lucide-react";
+import { Plus, AlertCircle } from "lucide-react";
 
 const CATEGORIES = [
   "category.food",
