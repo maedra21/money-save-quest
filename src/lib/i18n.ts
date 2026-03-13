@@ -206,7 +206,7 @@ const translations = {
     "history.week": "Эта неделя",
     "history.month": "Этот месяц",
     "history.streak": "Текущая серия",
-    "history.total": "Всего накоплено",
+    "history.total": "Всего сэкономлено",
     "history.days.saved": "дней сэкономлено",
     "calendar.saved": (n: number) => `${n} сэконом.`,
     "calendar.missed": (n: number) => `${n} пропущ.`,
