@@ -30,7 +30,33 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
     setStep("amount");
   };
 
+  const [amountError, setAmountError] = useState(false);
+  const symbol = getCurrencySymbol();
+
+  const validateAmount = (val: string): boolean => {
+    // Only allow digits and one decimal point
+    const clean = val.replace(/[^0-9.]/g, "");
+    // Ensure only one decimal point
+    const parts = clean.split(".");
+    if (parts.length > 2) return false;
+    // Check it's a valid positive number
+    const num = parseFloat(clean);
+    return !isNaN(num) && num > 0;
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // Allow only numbers and one decimal point during typing
+    if (val && !/^\d*\.?\d*$/.test(val)) return;
+    setAmount(val);
+    setAmountError(false);
+  };
+
   const handleSubmitAmount = () => {
+    if (!amount || !validateAmount(amount)) {
+      setAmountError(true);
+      return;
+    }
     const num = parseFloat(amount);
     setCurrentAmount(num > 0 ? num : undefined);
     setStep("category");
