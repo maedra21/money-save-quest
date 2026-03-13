@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { t, getCurrencySymbol, formatCurrency } from "@/lib/i18n";
 import type { SavingItem } from "@/lib/storage";
-import { Plus } from "lucide-react";
+import { Plus, AlertCircle } from "lucide-react";
 
 const CATEGORIES = [
   "category.food",
@@ -24,13 +24,33 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
   const [amount, setAmount] = useState("");
   const [currentAmount, setCurrentAmount] = useState<number | undefined>();
   const [items, setItems] = useState<SavingItem[]>([]);
+  const [amountError, setAmountError] = useState(false);
   const symbol = getCurrencySymbol();
 
   const handleYes = () => {
     setStep("amount");
   };
 
+  const validateAmount = (val: string): boolean => {
+    const clean = val.replace(/[^0-9.]/g, "");
+    const parts = clean.split(".");
+    if (parts.length > 2) return false;
+    const num = parseFloat(clean);
+    return !isNaN(num) && num > 0;
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val && !/^\d*\.?\d*$/.test(val)) return;
+    setAmount(val);
+    setAmountError(false);
+  };
+
   const handleSubmitAmount = () => {
+    if (!amount || !validateAmount(amount)) {
+      setAmountError(true);
+      return;
+    }
     const num = parseFloat(amount);
     setCurrentAmount(num > 0 ? num : undefined);
     setStep("category");
@@ -48,6 +68,7 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
     setStep("review");
     setAmount("");
     setCurrentAmount(undefined);
+    setAmountError(false);
   };
 
   const handleSkipCategory = () => {
@@ -57,6 +78,7 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
     setStep("review");
     setAmount("");
     setCurrentAmount(undefined);
+    setAmountError(false);
   };
 
   const handleAddMore = () => {
@@ -73,6 +95,7 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
     setAmount("");
     setCurrentAmount(undefined);
     setItems([]);
+    setAmountError(false);
   };
 
   if (step === "review") {
@@ -158,9 +181,10 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center gap-4 w-full max-w-xs"
+        className="flex flex-col items-center gap-3 w-full max-w-xs"
       >
         <p className="text-lg font-display font-semibold text-foreground">{t("amount.question")}</p>
+        <p className="text-xs text-muted-foreground font-body">{t("amount.hint")}</p>
         {items.length > 0 && (
           <p className="text-xs text-muted-foreground font-body">
             {t("review.itemCount", items.length)}
@@ -169,16 +193,22 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         <div className="relative w-full">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-display text-muted-foreground">{symbol}</span>
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={handleAmountChange}
             placeholder="0.00"
             autoFocus
-            className="w-full py-4 pl-10 pr-4 rounded-xl bg-secondary text-foreground text-2xl font-display text-center border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+            className={`w-full py-4 pl-10 pr-4 rounded-xl bg-secondary text-foreground text-2xl font-display text-center border ${amountError ? "border-destructive focus:ring-destructive" : "border-border focus:ring-primary"} focus:outline-none focus:ring-2`}
           />
         </div>
-        <div className="flex gap-3 w-full">
+        {amountError && (
+          <div className="flex items-center gap-1.5 text-destructive text-sm">
+            <AlertCircle size={14} />
+            <span className="font-body">{t("amount.required")}</span>
+          </div>
+        )}
+        <div className="flex gap-3 w-full mt-1">
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handleSubmitAmount}
