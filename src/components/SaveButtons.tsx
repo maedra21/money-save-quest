@@ -179,6 +179,13 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
         >
           {t("category.skip")}
         </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCancel}
+          className="text-sm text-muted-foreground underline mt-0.5"
+        >
+          {t("cancel")}
+        </motion.button>
       </motion.div>
     );
   }
