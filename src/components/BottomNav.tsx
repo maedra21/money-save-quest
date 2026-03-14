@@ -21,12 +21,12 @@ const BottomNav = () => {
           <button
             key={tab.path}
             onClick={() => navigate(tab.path)}
-            className={`flex flex-col items-center gap-1 px-4 py-1 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors min-w-[64px] ${
               active ? "text-primary" : "text-muted-foreground"
             }`}
           >
-            <tab.icon size={20} />
-            <span className="text-[10px] font-body">{t(tab.labelKey)}</span>
+            <tab.icon size={22} />
+            <span className="text-xs font-body">{t(tab.labelKey)}</span>
           </button>
         );
       })}

@@ -6,14 +6,15 @@ export type CurrencyInfo = {
   code: CurrencyCode;
   symbol: string;
   label: string;
+  labelRu: string;
   emoji: string;
 };
 
 export const CURRENCIES: CurrencyInfo[] = [
-  { code: "USD", symbol: "$", label: "Dollar", emoji: "💵" },
-  { code: "EUR", symbol: "€", label: "Euro", emoji: "💶" },
-  { code: "RUB", symbol: "₽", label: "Ruble", emoji: "🇷🇺" },
-  { code: "KGS", symbol: "с", label: "Som", emoji: "🇰🇬" },
+  { code: "USD", symbol: "$", label: "Dollar", labelRu: "Доллар", emoji: "💵" },
+  { code: "EUR", symbol: "€", label: "Euro", labelRu: "Евро", emoji: "💶" },
+  { code: "RUB", symbol: "₽", label: "Ruble", labelRu: "Рубль", emoji: "🇷🇺" },
+  { code: "KGS", symbol: "с", label: "Som", labelRu: "Сом", emoji: "🇰🇬" },
 ];
 
 export type DreamCategory = {
@@ -102,6 +103,11 @@ const translations = {
     "answered.change": "Change answer",
     "answered.addMore": "Add more savings",
     "cancel": "Cancel",
+    "calendar.detail.saved": "Saved",
+    "calendar.detail.notSaved": "Not saved",
+    "calendar.detail.noAmount": "No amount specified",
+    "calendar.detail.noEntry": "No entry for this day",
+    "calendar.detail.total": "Total",
     "amount.question": "How much did you save?",
     "amount.hint": "At least an approximate amount",
     "amount.save": "Save ✅",
@@ -191,6 +197,11 @@ const translations = {
     "answered.change": "Изменить ответ",
     "answered.addMore": "Добавить ещё",
     "cancel": "Отмена",
+    "calendar.detail.saved": "Сэкономлено",
+    "calendar.detail.notSaved": "Не сэкономлено",
+    "calendar.detail.noAmount": "Сумма не указана",
+    "calendar.detail.noEntry": "Нет записи за этот день",
+    "calendar.detail.total": "Итого",
     "amount.question": "Сколько ты сэкономил?",
     "amount.hint": "Хотя бы примерную сумму",
     "amount.save": "Сохранить ✅",

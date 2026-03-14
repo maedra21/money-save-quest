@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { t, getCurrencySymbol, formatCurrency } from "@/lib/i18n";
 import type { SavingItem } from "@/lib/storage";
-import { Plus, AlertCircle } from "lucide-react";
+import { Plus, AlertCircle, X } from "lucide-react";
 
 const CATEGORIES = [
   "category.food",
@@ -58,15 +58,9 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
     setStep("category");
   };
 
-  const handleSkipAmount = () => {
-    setCurrentAmount(undefined);
-    setStep("category");
-  };
-
   const handleSelectCategory = (cat: string) => {
     const newItem: SavingItem = { amount: currentAmount, category: cat };
-    const newItems = [...items, newItem];
-    setItems(newItems);
+    setItems([...items, newItem]);
     setStep("review");
     setAmount("");
     setCurrentAmount(undefined);
@@ -75,8 +69,7 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
 
   const handleSkipCategory = () => {
     const newItem: SavingItem = { amount: currentAmount };
-    const newItems = [...items, newItem];
-    setItems(newItems);
+    setItems([...items, newItem]);
     setStep("review");
     setAmount("");
     setCurrentAmount(undefined);
@@ -111,14 +104,14 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center gap-4 w-full max-w-xs"
+        className="flex flex-col items-center gap-4 w-full max-w-sm"
       >
         <p className="text-lg font-display font-semibold text-foreground">
           {t("review.title")}
         </p>
         <div className="w-full space-y-2">
           {items.map((item, i) => (
-            <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-2.5 border border-border">
+            <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3 border border-border">
               <span className="text-sm font-body text-foreground">{item.category || "—"}</span>
               <span className="text-sm font-display font-bold text-primary">
                 {item.amount ? formatCurrency(item.amount) : "—"}
@@ -135,16 +128,16 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handleFinish}
-            className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg"
+            className="flex-1 py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg"
           >
             {t("review.done")}
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handleAddMore}
-            className="py-3 px-4 rounded-xl bg-secondary text-foreground font-body text-sm border border-border flex items-center gap-1.5"
+            className="py-4 px-5 rounded-2xl bg-secondary text-foreground font-display font-bold border border-border flex items-center gap-2"
           >
-            <Plus size={16} />
+            <Plus size={18} />
             {t("review.addMore")}
           </motion.button>
         </div>
@@ -157,35 +150,38 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center gap-4 w-full max-w-xs"
+        className="flex flex-col items-center gap-4 w-full max-w-sm"
       >
         <p className="text-lg font-display font-semibold text-foreground">{t("category.question")}</p>
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="grid grid-cols-2 gap-3 w-full">
           {CATEGORIES.map((catKey) => (
             <motion.button
               key={catKey}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleSelectCategory(t(catKey))}
-              className="px-4 py-2.5 rounded-xl bg-secondary text-foreground font-body text-sm border border-border hover:bg-accent transition-colors"
+              className="py-3.5 px-4 rounded-xl bg-secondary text-foreground font-body text-sm border border-border hover:bg-accent transition-colors text-center"
             >
               {t(catKey)}
             </motion.button>
           ))}
         </div>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSkipCategory}
-          className="text-sm text-muted-foreground underline mt-1"
-        >
-          {t("category.skip")}
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={handleCancel}
-          className="text-sm text-muted-foreground underline mt-0.5"
-        >
-          {t("cancel")}
-        </motion.button>
+        <div className="flex gap-4 mt-1">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSkipCategory}
+            className="py-2.5 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border"
+          >
+            {t("category.skip")}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleCancel}
+            className="py-2.5 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border flex items-center gap-1.5"
+          >
+            <X size={14} />
+            {t("cancel")}
+          </motion.button>
+        </div>
       </motion.div>
     );
   }
@@ -195,7 +191,7 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center gap-3 w-full max-w-xs"
+        className="flex flex-col items-center gap-3 w-full max-w-sm"
       >
         <p className="text-lg font-display font-semibold text-foreground">{t("amount.question")}</p>
         <p className="text-xs text-muted-foreground font-body">{t("amount.hint")}</p>
@@ -222,20 +218,19 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
             <span className="font-body">{t("amount.required")}</span>
           </div>
         )}
-        <div className="flex gap-3 w-full mt-1">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSubmitAmount}
-            className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg"
-          >
-            {t("amount.save")}
-          </motion.button>
-        </div>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleSubmitAmount}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg mt-1"
+        >
+          {t("amount.save")}
+        </motion.button>
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={handleCancel}
-          className="text-sm text-muted-foreground underline mt-1"
+          className="py-2.5 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border flex items-center gap-1.5"
         >
+          <X size={14} />
           {t("cancel")}
         </motion.button>
       </motion.div>
@@ -243,7 +238,7 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
   }
 
   return (
-    <div className="flex gap-6 w-full max-w-xs">
+    <div className="flex gap-4 w-full max-w-sm">
       <motion.button
         whileTap={{ scale: 0.92 }}
         whileHover={{ scale: 1.05 }}
