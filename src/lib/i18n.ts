@@ -6,14 +6,15 @@ export type CurrencyInfo = {
   code: CurrencyCode;
   symbol: string;
   label: string;
+  labelRu: string;
   emoji: string;
 };
 
 export const CURRENCIES: CurrencyInfo[] = [
-  { code: "USD", symbol: "$", label: "Dollar", emoji: "💵" },
-  { code: "EUR", symbol: "€", label: "Euro", emoji: "💶" },
-  { code: "RUB", symbol: "₽", label: "Ruble", emoji: "🇷🇺" },
-  { code: "KGS", symbol: "с", label: "Som", emoji: "🇰🇬" },
+  { code: "USD", symbol: "$", label: "Dollar", labelRu: "Доллар", emoji: "💵" },
+  { code: "EUR", symbol: "€", label: "Euro", labelRu: "Евро", emoji: "💶" },
+  { code: "RUB", symbol: "₽", label: "Ruble", labelRu: "Рубль", emoji: "🇷🇺" },
+  { code: "KGS", symbol: "с", label: "Som", labelRu: "Сом", emoji: "🇰🇬" },
 ];
 
 export type DreamCategory = {
