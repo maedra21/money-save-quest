@@ -17,10 +17,12 @@ const CATEGORIES = [
 interface SaveButtonsProps {
   onAnswer: (saved: boolean, items?: SavingItem[]) => void;
   disabled: boolean;
+  addingMore?: boolean;
+  onCancel?: () => void;
 }
 
-const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
-  const [step, setStep] = useState<"buttons" | "amount" | "category" | "review">("buttons");
+const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsProps) => {
+  const [step, setStep] = useState<"buttons" | "amount" | "category" | "review">(addingMore ? "amount" : "buttons");
   const [amount, setAmount] = useState("");
   const [currentAmount, setCurrentAmount] = useState<number | undefined>();
   const [items, setItems] = useState<SavingItem[]>([]);
@@ -88,6 +90,11 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
   const handleFinish = () => {
     onAnswer(true, items);
     resetState();
+  };
+
+  const handleCancel = () => {
+    resetState();
+    onCancel?.();
   };
 
   const resetState = () => {
@@ -172,6 +179,13 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
         >
           {t("category.skip")}
         </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCancel}
+          className="text-sm text-muted-foreground underline mt-0.5"
+        >
+          {t("cancel")}
+        </motion.button>
       </motion.div>
     );
   }
@@ -216,14 +230,14 @@ const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
           >
             {t("amount.save")}
           </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSkipAmount}
-            className="py-3 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border"
-          >
-            {t("amount.skip")}
-          </motion.button>
         </div>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCancel}
+          className="text-sm text-muted-foreground underline mt-1"
+        >
+          {t("cancel")}
+        </motion.button>
       </motion.div>
     );
   }

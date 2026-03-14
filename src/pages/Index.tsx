@@ -19,6 +19,7 @@ const Index = () => {
   const [answered, setAnswered] = useState(false);
   const [todayAnswer, setTodayAnswer] = useState<boolean | null>(null);
   const [todayAmount, setTodayAmount] = useState<number | undefined>();
+  const [addingMore, setAddingMore] = useState(false);
 
   const refresh = useCallback(() => {
     setStreak(getStreak());
@@ -37,7 +38,12 @@ const Index = () => {
 
   const handleAnswer = (saved: boolean, items?: SavingItem[]) => {
     saveEntry(new Date(), saved, items);
+    setAddingMore(false);
     refresh();
+  };
+
+  const handleAddMore = () => {
+    setAddingMore(true);
   };
 
   const titleLines = t("app.title").split("\n");
@@ -67,7 +73,7 @@ const Index = () => {
         <TotalSaved />
 
         <AnimatePresence mode="wait">
-          {answered ? (
+          {answered && !addingMore ? (
             <motion.div
               key="answered"
               initial={{ scale: 0.8, opacity: 0 }}
@@ -89,12 +95,22 @@ const Index = () => {
                     })()
                   : t("answered.no")}
               </p>
-              <button
-                onClick={() => setAnswered(false)}
-                className="text-sm text-muted-foreground underline mt-1"
-              >
-                {t("answered.change")}
-              </button>
+              <div className="flex gap-3">
+                {todayAnswer && (
+                  <button
+                    onClick={handleAddMore}
+                    className="text-sm text-primary underline mt-1 font-body"
+                  >
+                    {t("answered.addMore")}
+                  </button>
+                )}
+                <button
+                  onClick={() => setAnswered(false)}
+                  className="text-sm text-muted-foreground underline mt-1"
+                >
+                  {t("answered.change")}
+                </button>
+              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -103,7 +119,12 @@ const Index = () => {
               animate={{ y: 0, opacity: 1 }}
               className="flex justify-center w-full"
             >
-              <SaveButtons onAnswer={handleAnswer} disabled={false} />
+              <SaveButtons
+                onAnswer={handleAnswer}
+                disabled={false}
+                addingMore={addingMore}
+                onCancel={() => { setAddingMore(false); refresh(); }}
+              />
             </motion.div>
           )}
         </AnimatePresence>
