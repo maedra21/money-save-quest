@@ -95,21 +95,23 @@ const Index = () => {
                     })()
                   : t("answered.no")}
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-3 w-full max-w-xs justify-center">
                 {todayAnswer && (
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleAddMore}
-                    className="text-sm text-primary underline mt-1 font-body"
+                    className="py-3 px-5 rounded-xl bg-primary/10 text-primary font-display font-bold text-sm border border-primary/30"
                   >
                     {t("answered.addMore")}
-                  </button>
+                  </motion.button>
                 )}
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setAnswered(false)}
-                  className="text-sm text-muted-foreground underline mt-1"
+                  className="py-3 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border"
                 >
                   {t("answered.change")}
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           ) : (

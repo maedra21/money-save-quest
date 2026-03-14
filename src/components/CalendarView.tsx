@@ -13,14 +13,14 @@ import {
 import { getAllEntries, DayEntry, getEntryItems } from "@/lib/storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { t, formatCurrency, getPreferences } from "@/lib/i18n";
+import { t, formatCurrency } from "@/lib/i18n";
 
-const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+const WEEKDAYS_EN = ["S", "M", "T", "W", "T", "F", "S"];
+const WEEKDAYS_RU = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 
 const CalendarView = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<{ date: string; entry?: DayEntry } | null>(null);
-  const lang = getPreferences().language;
 
   const entries = useMemo(() => {
     const all = getAllEntries();
@@ -45,15 +45,18 @@ const CalendarView = () => {
     setSelectedDay({ date: key, entry });
   };
 
+  // Use t() to detect language for weekday headers
+  const weekdays = t("nav.today") === "Сегодня" ? WEEKDAYS_RU : WEEKDAYS_EN;
+
   return (
     <div className="w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-lg bg-secondary text-foreground">
-          <ChevronLeft size={18} />
+        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-3 rounded-xl bg-secondary text-foreground">
+          <ChevronLeft size={20} />
         </button>
         <h2 className="text-lg font-display font-bold">{format(currentMonth, "MMMM yyyy")}</h2>
-        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 rounded-lg bg-secondary text-foreground">
-          <ChevronRight size={18} />
+        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-3 rounded-xl bg-secondary text-foreground">
+          <ChevronRight size={20} />
         </button>
       </div>
 
@@ -70,8 +73,8 @@ const CalendarView = () => {
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-1">
-        {WEEKDAYS.map((d, i) => (
-          <div key={`${d}-${i}`} className="text-center text-[10px] font-body text-muted-foreground py-1">
+        {weekdays.map((d, i) => (
+          <div key={`${d}-${i}`} className="text-center text-xs font-body text-muted-foreground py-1">
             {d}
           </div>
         ))}
@@ -131,12 +134,12 @@ const CalendarView = () => {
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.85, opacity: 0 }}
-              className="bg-card border border-border rounded-2xl p-6 max-w-xs w-full shadow-2xl"
+              className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-display font-bold text-foreground">{selectedDay.date}</h3>
-                <button onClick={() => setSelectedDay(null)} className="text-muted-foreground">
+                <button onClick={() => setSelectedDay(null)} className="p-2 rounded-lg bg-secondary text-muted-foreground">
                   <X size={20} />
                 </button>
               </div>
@@ -148,20 +151,20 @@ const CalendarView = () => {
                   </div>
                   <p className="font-display font-semibold text-foreground">
                     {selectedDay.entry.saved
-                      ? (lang === "ru" ? "Сэкономлено" : "Saved")
-                      : (lang === "ru" ? "Не сэкономлено" : "Not saved")}
+                      ? t("calendar.detail.saved")
+                      : t("calendar.detail.notSaved")}
                   </p>
                   {selectedDay.entry.saved && (() => {
                     const items = getEntryItems(selectedDay.entry!);
                     if (items.length === 0) return (
                       <p className="text-sm text-muted-foreground font-body">
-                        {lang === "ru" ? "Сумма не указана" : "No amount specified"}
+                        {t("calendar.detail.noAmount")}
                       </p>
                     );
                     return (
                       <div className="w-full space-y-2">
                         {items.map((item, i) => (
-                          <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-2 border border-border">
+                          <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3 border border-border">
                             <span className="text-sm font-body text-foreground">{item.category || "—"}</span>
                             <span className="text-sm font-display font-bold text-primary">
                               {item.amount ? formatCurrency(item.amount) : "—"}
@@ -170,7 +173,7 @@ const CalendarView = () => {
                         ))}
                         {selectedDay.entry!.amount && (
                           <p className="text-center text-lg font-display font-bold text-primary mt-1">
-                            {lang === "ru" ? "Итого" : "Total"}: {formatCurrency(selectedDay.entry!.amount)}
+                            {t("calendar.detail.total")}: {formatCurrency(selectedDay.entry!.amount)}
                           </p>
                         )}
                       </div>
@@ -181,7 +184,7 @@ const CalendarView = () => {
                 <div className="flex flex-col items-center gap-3">
                   <div className="text-5xl">📅</div>
                   <p className="text-sm text-muted-foreground font-body">
-                    {lang === "ru" ? "Нет записи за этот день" : "No entry for this day"}
+                    {t("calendar.detail.noEntry")}
                   </p>
                 </div>
               )}
