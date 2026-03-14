@@ -92,6 +92,11 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
     resetState();
   };
 
+  const handleCancel = () => {
+    resetState();
+    onCancel?.();
+  };
+
   const resetState = () => {
     setStep("buttons");
     setAmount("");
