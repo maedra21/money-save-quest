@@ -223,14 +223,14 @@ const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsPr
           >
             {t("amount.save")}
           </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSkipAmount}
-            className="py-3 px-5 rounded-xl bg-secondary text-muted-foreground font-body text-sm border border-border"
-          >
-            {t("amount.skip")}
-          </motion.button>
         </div>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCancel}
+          className="text-sm text-muted-foreground underline mt-1"
+        >
+          {t("cancel")}
+        </motion.button>
       </motion.div>
     );
   }
