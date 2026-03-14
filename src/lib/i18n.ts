@@ -189,6 +189,8 @@ const translations = {
     "answered.yes.amount": (amount: string) => `Ты сэкономил ${amount} сегодня!`,
     "answered.no": "Ничего страшного. Попробуй завтра!",
     "answered.change": "Изменить ответ",
+    "answered.addMore": "Добавить ещё",
+    "cancel": "Отмена",
     "amount.question": "Сколько ты сэкономил?",
     "amount.hint": "Хотя бы примерную сумму",
     "amount.save": "Сохранить ✅",
