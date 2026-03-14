@@ -83,7 +83,7 @@ const Welcome = ({ onComplete }: WelcomeProps) => {
               }`}
             >
               <span className="text-2xl">{cur.emoji}</span>
-              <span className="font-display font-bold">{cur.label}</span>
+              <span className="font-display font-bold">{selectedLanguage === "ru" ? cur.labelRu : cur.label}</span>
               <span className="text-sm opacity-70">({cur.symbol})</span>
             </button>
           ))}
