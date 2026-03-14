@@ -19,6 +19,7 @@ const Index = () => {
   const [answered, setAnswered] = useState(false);
   const [todayAnswer, setTodayAnswer] = useState<boolean | null>(null);
   const [todayAmount, setTodayAmount] = useState<number | undefined>();
+  const [addingMore, setAddingMore] = useState(false);
 
   const refresh = useCallback(() => {
     setStreak(getStreak());
@@ -37,7 +38,12 @@ const Index = () => {
 
   const handleAnswer = (saved: boolean, items?: SavingItem[]) => {
     saveEntry(new Date(), saved, items);
+    setAddingMore(false);
     refresh();
+  };
+
+  const handleAddMore = () => {
+    setAddingMore(true);
   };
 
   const titleLines = t("app.title").split("\n");
