@@ -17,10 +17,12 @@ const CATEGORIES = [
 interface SaveButtonsProps {
   onAnswer: (saved: boolean, items?: SavingItem[]) => void;
   disabled: boolean;
+  addingMore?: boolean;
+  onCancel?: () => void;
 }
 
-const SaveButtons = ({ onAnswer, disabled }: SaveButtonsProps) => {
-  const [step, setStep] = useState<"buttons" | "amount" | "category" | "review">("buttons");
+const SaveButtons = ({ onAnswer, disabled, addingMore, onCancel }: SaveButtonsProps) => {
+  const [step, setStep] = useState<"buttons" | "amount" | "category" | "review">(addingMore ? "amount" : "buttons");
   const [amount, setAmount] = useState("");
   const [currentAmount, setCurrentAmount] = useState<number | undefined>();
   const [items, setItems] = useState<SavingItem[]>([]);
