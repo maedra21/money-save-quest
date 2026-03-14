@@ -100,6 +100,8 @@ const translations = {
     "answered.yes.amount": (amount: string) => `You saved ${amount} today!`,
     "answered.no": "That's okay. Try again tomorrow!",
     "answered.change": "Change answer",
+    "answered.addMore": "Add more savings",
+    "cancel": "Cancel",
     "amount.question": "How much did you save?",
     "amount.hint": "At least an approximate amount",
     "amount.save": "Save ✅",
