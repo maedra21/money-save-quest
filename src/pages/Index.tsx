@@ -52,7 +52,7 @@ const Index = () => {
     <div className="flex flex-col min-h-[100dvh]">
       <AchievementPopup />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6 py-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6 py-8 w-full max-w-sm mx-auto">
         <motion.h1
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
