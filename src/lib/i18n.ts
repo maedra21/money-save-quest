@@ -178,6 +178,11 @@ const translations = {
     "achievement.savingsLegend": "Savings Legend",
     "achievement.savingsLegend.desc": "100 day streak",
     "dream.saving.for": "Saving for:",
+    "quote.biden": "Don't tell me what you value, show me your budget. — Joe Biden",
+    "quote.penny": "A penny saved is a penny earned. — Benjamin Franklin",
+    "quote.art": "The art is not in making money, but in keeping it. — Proverb",
+    "quote.leak": "Beware of little expenses. A small leak will sink a great ship. — Benjamin Franklin",
+    "quote.buffett": "Do not save what is left after spending, but spend what is left after saving. — Warren Buffett",
   },
   ru: {
     "app.title": "Ты сэкономил\nденьги сегодня?",
@@ -272,6 +277,11 @@ const translations = {
     "achievement.savingsLegend": "Легенда экономии",
     "achievement.savingsLegend.desc": "Серия 100 дней",
     "dream.saving.for": "Коплю на:",
+    "quote.biden": "Не говори мне, что ты ценишь, покажи мне свой бюджет. — Джо Байден",
+    "quote.penny": "Копейка рубль бережёт. — Пословица",
+    "quote.art": "Искусство не в том, чтобы заработать деньги, а в том, чтобы их сохранить. — Пословица",
+    "quote.leak": "Берегись мелких расходов. Маленькая течь может потопить большой корабль. — Бенджамин Франклин",
+    "quote.buffett": "Не откладывай то, что осталось после расходов, а трать то, что осталось после откладывания. — Уоррен Баффетт",
   },
 } as const;
 
