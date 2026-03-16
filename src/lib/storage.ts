@@ -13,6 +13,11 @@ export type DayEntry = {
   items?: SavingItem[];
 };
 
+type SavingsGoal = {
+  target: number;
+  startDate: string;
+};
+
 type AppSettings = {
   savingsGoal: SavingsGoal | null;
   seenAchievements: string[];
