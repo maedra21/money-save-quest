@@ -68,7 +68,6 @@ const Index = () => {
 
         <StreakDisplay streak={streak} />
 
-        <GoalProgress />
         <DreamBanner />
         <TotalSaved />
 
