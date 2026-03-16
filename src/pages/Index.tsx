@@ -134,7 +134,7 @@ const Index = () => {
         <DailyQuote />
       </div>
 
-      <AdBanner />
+      
       <BottomNav />
     </div>
   );

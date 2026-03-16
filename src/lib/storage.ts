@@ -138,7 +138,7 @@ export function getSettings(): AppSettings {
   const raw = localStorage.getItem(SETTINGS_KEY);
   return raw
     ? JSON.parse(raw)
-    : { isPremium: false, savingsGoal: null, seenAchievements: [] };
+    : { savingsGoal: null, seenAchievements: [] };
 }
 
 export function updateSettings(partial: Partial<AppSettings>): void {
