@@ -257,7 +257,7 @@ const translations = {
     "nav.history": "История",
     "nav.badges": "Значки",
     "nav.settings": "Настройки",
-    "ad.text": "Рекламное место — AdMob",
+    
     "share.saving.for": "Я коплю уже",
     "share.days": "дней",
     "share.saved": "накоплено",
