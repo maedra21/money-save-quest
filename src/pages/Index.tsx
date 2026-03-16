@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import StreakDisplay from "@/components/StreakDisplay";
 import SaveButtons from "@/components/SaveButtons";
-import GoalProgress from "@/components/GoalProgress";
+
 import DreamBanner from "@/components/DreamBanner";
 import TotalSaved from "@/components/TotalSaved";
 import DailyQuote from "@/components/DailyQuote";
 import AchievementPopup from "@/components/AchievementPopup";
-import AdBanner from "@/components/AdBanner";
+
 import BottomNav from "@/components/BottomNav";
 import { getStreak, hasAnsweredToday, saveEntry, getEntryForDate, getEntryItems } from "@/lib/storage";
 import type { SavingItem } from "@/lib/storage";
@@ -68,7 +68,6 @@ const Index = () => {
 
         <StreakDisplay streak={streak} />
 
-        <GoalProgress />
         <DreamBanner />
         <TotalSaved />
 
@@ -134,7 +133,7 @@ const Index = () => {
         <DailyQuote />
       </div>
 
-      <AdBanner />
+      
       <BottomNav />
     </div>
   );

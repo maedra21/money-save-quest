@@ -1,11 +1,22 @@
 import { useState } from "react";
 import BottomNav from "@/components/BottomNav";
-import { getSettings, updateSettings } from "@/lib/storage";
+import { getSettings, updateSettings, getAllEntries } from "@/lib/storage";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { Crown } from "lucide-react";
 import { t, getPreferences, updatePreferences, CURRENCIES, getCurrencySymbol, DREAM_CATEGORIES } from "@/lib/i18n";
 import type { Language, CurrencyCode } from "@/lib/i18n";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 
 const SettingsPage = () => {
   const settings = getSettings();
@@ -18,7 +29,6 @@ const SettingsPage = () => {
   const [currency, setCurrency] = useState<CurrencyCode>(prefs.currency);
   const [dreamId, setDreamId] = useState<string | null>(prefs.dreamId || null);
   const [customDream, setCustomDream] = useState(prefs.dreamCustomName || "");
-  const isPremium = settings.isPremium;
   const symbol = getCurrencySymbol();
 
   const handleSaveGoal = () => {
@@ -73,13 +83,9 @@ const SettingsPage = () => {
     updatePreferences({ dreamId: null, dreamCustomName: null });
   };
 
-  const handleUpgrade = () => {
-    updateSettings({ isPremium: true });
-    window.location.reload();
-  };
-
-  const handleDowngrade = () => {
-    updateSettings({ isPremium: false });
+  const handleResetAllData = () => {
+    localStorage.removeItem("did-i-save-today");
+    localStorage.removeItem("did-i-save-settings");
     window.location.reload();
   };
 
@@ -129,7 +135,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* Dream */}
+        {/* Dream + Goal unified */}
         <div className="mb-8">
           <h2 className="text-lg font-display font-semibold mb-2 text-foreground">{t("settings.dream")}</h2>
           <p className="text-sm text-muted-foreground font-body mb-4">{t("settings.dream.select")}</p>
@@ -174,75 +180,64 @@ const SettingsPage = () => {
               {t("settings.dream.clear")}
             </button>
           )}
-        </div>
 
-        {/* Savings Goal */}
-        <div className="mb-8">
-          <h2 className="text-lg font-display font-semibold mb-4 text-foreground">{t("settings.goal")}</h2>
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-display">{symbol}</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={goalAmount}
-                onChange={(e) => setGoalAmount(e.target.value)}
-                placeholder="100"
-                className="w-full py-3 pl-8 pr-4 rounded-xl bg-secondary text-foreground font-display border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+          {/* Goal amount — now part of the dream section */}
+          {dreamId && (
+            <div className="mt-4">
+              <p className="text-sm text-muted-foreground font-body mb-2">{t("settings.goal.amount")}</p>
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-display">{symbol}</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={goalAmount}
+                    onChange={(e) => setGoalAmount(e.target.value)}
+                    placeholder="100"
+                    className="w-full py-3 pl-8 pr-4 rounded-xl bg-secondary text-foreground font-display border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <button
+                  onClick={handleSaveGoal}
+                  className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold"
+                >
+                  {saved ? "✓" : t("settings.set")}
+                </button>
+              </div>
+              {settings.savingsGoal && (
+                <button
+                  onClick={handleClearGoal}
+                  className="text-xs text-muted-foreground underline mt-2"
+                >
+                  {t("settings.clear")}
+                </button>
+              )}
             </div>
-            <button
-              onClick={handleSaveGoal}
-              className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold"
-            >
-              {saved ? "✓" : t("settings.set")}
-            </button>
-          </div>
-          {settings.savingsGoal && (
-            <button
-              onClick={handleClearGoal}
-              className="text-xs text-muted-foreground underline mt-2"
-            >
-              {t("settings.clear")}
-            </button>
           )}
         </div>
 
-        {/* Premium */}
+        {/* Reset data */}
         <div className="mb-8">
-          <h2 className="text-lg font-display font-semibold mb-4 text-foreground">{t("settings.premium")}</h2>
-          <motion.div
-            className={`rounded-xl p-5 border ${
-              isPremium ? "bg-primary/10 border-primary/30" : "bg-card border-border"
-            }`}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <Crown size={24} className="text-primary" />
-              <div>
-                <p className="font-display font-bold text-foreground">
-                  {isPremium ? t("settings.premium.active") : t("settings.premium.go")}
-                </p>
-                <p className="text-xs text-muted-foreground font-body">
-                  {isPremium ? t("settings.premium.thanks") : t("settings.premium.price")}
-                </p>
-              </div>
-            </div>
-            {isPremium ? (
-              <button
-                onClick={handleDowngrade}
-                className="w-full py-2 rounded-lg bg-secondary text-muted-foreground font-body text-sm border border-border"
-              >
-                {t("settings.premium.downgrade")}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="w-full py-3 rounded-xl bg-destructive/10 text-destructive font-display font-bold border border-destructive/30 flex items-center justify-center gap-2">
+                <Trash2 size={18} />
+                {t("settings.reset")}
               </button>
-            ) : (
-              <button
-                onClick={handleUpgrade}
-                className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display font-bold"
-              >
-                {t("settings.premium.upgrade")}
-              </button>
-            )}
-          </motion.div>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("settings.reset.title")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("settings.reset.desc")}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleResetAllData} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  {t("settings.reset.confirm")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         {/* About */}
