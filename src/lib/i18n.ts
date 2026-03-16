@@ -160,7 +160,7 @@ const translations = {
     "nav.history": "History",
     "nav.badges": "Badges",
     "nav.settings": "Settings",
-    "ad.text": "Ad Space — AdMob Banner",
+    
     "share.saving.for": "I've been saving for",
     "share.days": "days",
     "share.saved": "saved",
